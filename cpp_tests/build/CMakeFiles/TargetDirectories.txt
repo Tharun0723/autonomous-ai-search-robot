@@ -1,0 +1,3 @@
+/home/tharun/autonomous-ai-search-robot/cpp_tests/build/CMakeFiles/robot_test.dir
+/home/tharun/autonomous-ai-search-robot/cpp_tests/build/CMakeFiles/edit_cache.dir
+/home/tharun/autonomous-ai-search-robot/cpp_tests/build/CMakeFiles/rebuild_cache.dir
