@@ -1,0 +1,12 @@
+# CMake build directories
+build/
+**/build/
+
+# Compiled executables
+robot_test
+
+# CMake generated files
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
