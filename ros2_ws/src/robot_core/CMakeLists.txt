@@ -1,0 +1,64 @@
+cmake_minimum_required(VERSION 3.8)
+project(robot_core)
+
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
+
+find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(rosidl_default_generators REQUIRED)
+
+rosidl_generate_interfaces(${PROJECT_NAME}
+  "srv/GetRobotStatus.srv"
+)
+
+if(BUILD_TESTING)
+  find_package(ament_lint_auto REQUIRED)
+  set(ament_cmake_copyright_FOUND TRUE)
+  set(ament_cmake_cpplint_FOUND TRUE)
+  ament_lint_auto_find_test_dependencies()
+endif()
+
+add_executable(robot_status_node src/robot_status_node.cpp)
+
+ament_target_dependencies(robot_status_node
+  rclcpp
+  std_msgs
+)
+
+add_executable(robot_monitor_node src/robot_monitor_node.cpp)
+
+ament_target_dependencies(robot_monitor_node
+  rclcpp
+  std_msgs
+)
+
+add_executable(robot_status_server src/robot_status_server.cpp)
+
+ament_target_dependencies(robot_status_server
+  rclcpp
+)
+
+rosidl_get_typesupport_target(cpp_typesupport_target ${PROJECT_NAME} "rosidl_typesupport_cpp")
+target_link_libraries(robot_status_server "${cpp_typesupport_target}")
+
+add_executable(robot_status_client src/robot_status_client.cpp)
+
+ament_target_dependencies(robot_status_client
+  rclcpp
+)
+
+rosidl_get_typesupport_target(cpp_typesupport_target_client ${PROJECT_NAME} "rosidl_typesupport_cpp")
+target_link_libraries(robot_status_client "${cpp_typesupport_target_client}")
+
+install(TARGETS
+  robot_status_node
+  robot_monitor_node
+  robot_status_server
+  robot_status_client
+  DESTINATION lib/${PROJECT_NAME}
+)
+
+ament_package()
