@@ -1,0 +1,4 @@
+robot_move_action_client:
+  ros__parameters:
+    target_distance: 8.0
+    auto_start_goal: true
