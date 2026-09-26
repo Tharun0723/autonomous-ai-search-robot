@@ -8,10 +8,18 @@ import os
 
 def generate_launch_description():
 
+    package_share = get_package_share_directory('robot_core')
+
     config_file = os.path.join(
-        get_package_share_directory('robot_core'),
+        package_share,
         'config',
         'robot_params.yaml'
+    )
+
+    urdf_file = os.path.join(
+        package_share,
+        'description',
+        'robot.urdf'
     )
 
     target_distance_arg = DeclareLaunchArgument(
@@ -26,10 +34,24 @@ def generate_launch_description():
         description='Automatically send the action goal when the client starts'
     )
 
+    with open(urdf_file, 'r') as file:
+        robot_description = file.read()
+
     return LaunchDescription([
 
         target_distance_arg,
         auto_start_goal_arg,
+
+        Node(
+            package='robot_state_publisher',
+            executable='robot_state_publisher',
+            name='robot_state_publisher',
+            parameters=[
+                {
+                    'robot_description': robot_description
+                }
+            ]
+        ),
 
         Node(
             package='robot_core',
