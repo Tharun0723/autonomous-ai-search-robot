@@ -4,6 +4,7 @@
   <name>robot_core</name>
   <version>0.1.0</version>
   <description>Core ROS 2 nodes and service interfaces for the Autonomous AI Search and Assistance Robot.</description>
+
   <maintainer email="tharunsrinivas7@gmail.com">tharun</maintainer>
   <license>Apache-2.0</license>
 
@@ -11,6 +12,7 @@
   <buildtool_depend>rosidl_default_generators</buildtool_depend>
 
   <depend>rclcpp</depend>
+  <depend>rclcpp_action</depend>
   <depend>std_msgs</depend>
 
   <exec_depend>rosidl_default_runtime</exec_depend>

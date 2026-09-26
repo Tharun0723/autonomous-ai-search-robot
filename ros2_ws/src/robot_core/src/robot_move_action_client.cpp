@@ -14,6 +14,16 @@ public:
     RobotMoveActionClient()
     : Node("robot_move_action_client")
     {
+        this->declare_parameter<double>("target_distance", 5.0);
+
+        target_distance_ =
+            this->get_parameter("target_distance").as_double();
+
+        this->declare_parameter<bool>("auto_start_goal", true);
+
+        auto_start_goal_ =
+            this->get_parameter("auto_start_goal").as_bool();
+
         action_client_ =
             rclcpp_action::create_client<MoveRobot>(
                 this,
@@ -23,7 +33,10 @@ public:
             this->get_logger(),
             "Robot Move Action Client started");
 
-        send_goal();
+        if (auto_start_goal_)
+        {
+            send_goal();
+        }
     }
 
     void send_goal();
@@ -37,6 +50,9 @@ private:
         const GoalHandleMoveRobot::WrappedResult & result);
 
     rclcpp_action::Client<MoveRobot>::SharedPtr action_client_;
+
+    double target_distance_;
+    bool auto_start_goal_;
 };
 
 void RobotMoveActionClient::send_goal()
@@ -62,7 +78,8 @@ void RobotMoveActionClient::send_goal()
 
     MoveRobot::Goal goal_msg;
 
-    goal_msg.target_distance = 5.0f;
+    goal_msg.target_distance =
+        static_cast<float>(target_distance_);
 
     RCLCPP_INFO(
         this->get_logger(),
