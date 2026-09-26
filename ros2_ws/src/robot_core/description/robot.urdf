@@ -1,0 +1,107 @@
+<?xml version="1.0"?>
+
+<robot name="autonomous_search_robot">
+
+    <!-- ========================= -->
+    <!-- Base Link                 -->
+    <!-- ========================= -->
+
+    <link name="base_link">
+
+        <visual>
+            <origin xyz="0 0 0.15" rpy="0 0 0"/>
+
+            <geometry>
+                <box size="0.60 0.40 0.30"/>
+            </geometry>
+        </visual>
+
+        <collision>
+            <origin xyz="0 0 0.15" rpy="0 0 0"/>
+
+            <geometry>
+                <box size="0.60 0.40 0.30"/>
+            </geometry>
+        </collision>
+
+    </link>
+
+
+    <!-- ========================= -->
+    <!-- Left Wheel                -->
+    <!-- ========================= -->
+
+    <link name="left_wheel">
+
+        <visual>
+            <origin xyz="0 0 0" rpy="1.5708 0 0"/>
+
+            <geometry>
+                <cylinder radius="0.10" length="0.05"/>
+            </geometry>
+        </visual>
+
+        <collision>
+            <origin xyz="0 0 0" rpy="1.5708 0 0"/>
+
+            <geometry>
+                <cylinder radius="0.10" length="0.05"/>
+            </geometry>
+        </collision>
+
+    </link>
+
+
+    <!-- ========================= -->
+    <!-- Right Wheel               -->
+    <!-- ========================= -->
+
+    <link name="right_wheel">
+
+        <visual>
+            <origin xyz="0 0 0" rpy="1.5708 0 0"/>
+
+            <geometry>
+                <cylinder radius="0.10" length="0.05"/>
+            </geometry>
+        </visual>
+
+        <collision>
+            <origin xyz="0 0 0" rpy="1.5708 0 0"/>
+
+            <geometry>
+                <cylinder radius="0.10" length="0.05"/>
+            </geometry>
+        </collision>
+
+    </link>
+
+
+    <!-- ========================= -->
+    <!-- Left Wheel Joint          -->
+    <!-- ========================= -->
+
+    <joint name="left_wheel_joint" type="fixed">
+
+        <parent link="base_link"/>
+        <child link="left_wheel"/>
+
+        <origin xyz="0 0.225 0.10" rpy="0 0 0"/>
+
+    </joint>
+
+
+    <!-- ========================= -->
+    <!-- Right Wheel Joint         -->
+    <!-- ========================= -->
+
+    <joint name="right_wheel_joint" type="fixed">
+
+        <parent link="base_link"/>
+        <child link="right_wheel"/>
+
+        <origin xyz="0 -0.225 0.10" rpy="0 0 0"/>
+
+    </joint>
+
+</robot>
