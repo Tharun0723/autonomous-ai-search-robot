@@ -20,9 +20,16 @@ def generate_launch_description():
         description='Target distance for the action client'
     )
 
+    auto_start_goal_arg = DeclareLaunchArgument(
+        'auto_start_goal',
+        default_value='true',
+        description='Automatically send the action goal when the client starts'
+    )
+
     return LaunchDescription([
 
         target_distance_arg,
+        auto_start_goal_arg,
 
         Node(
             package='robot_core',
@@ -37,7 +44,8 @@ def generate_launch_description():
             parameters=[
                 config_file,
                 {
-                    'target_distance': LaunchConfiguration('target_distance')
+                    'target_distance': LaunchConfiguration('target_distance'),
+                    'auto_start_goal': LaunchConfiguration('auto_start_goal')
                 }
             ]
         )
