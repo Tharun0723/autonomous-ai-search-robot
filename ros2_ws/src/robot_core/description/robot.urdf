@@ -8,6 +8,23 @@
 
     <link name="base_link">
 
+
+        <inertial>
+
+            <origin xyz="0 0 0.15" rpy="0 0 0"/>
+
+            <mass value="5.0"/>
+
+            <inertia
+                ixx="0.1042"
+                ixy="0.0"
+                ixz="0.0"
+                iyy="0.1875"
+                iyz="0.0"
+                izz="0.2167"/>
+
+        </inertial>
+
         <visual>
             <origin xyz="0 0 0.15" rpy="0 0 0"/>
 
@@ -32,6 +49,22 @@
     <!-- ========================= -->
 
     <link name="left_wheel">
+
+        <inertial>
+
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+
+            <mass value="0.5"/>
+
+            <inertia
+                ixx="0.001354"
+                ixy="0.0"
+                ixz="0.0"
+                iyy="0.0025"
+                iyz="0.0"
+                izz="0.001354"/>
+
+        </inertial>	
 
         <visual>
             <origin xyz="0 0 0" rpy="1.5708 0 0"/>
@@ -58,6 +91,22 @@
 
     <link name="right_wheel">
 
+        <inertial>
+
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+
+            <mass value="0.5"/>
+
+            <inertia
+                ixx="0.001354"
+                ixy="0.0"
+                ixz="0.0"
+                iyy="0.0025"
+                iyz="0.0"
+                izz="0.001354"/>
+
+        </inertial>
+
         <visual>
             <origin xyz="0 0 0" rpy="1.5708 0 0"/>
 
@@ -81,12 +130,14 @@
     <!-- Left Wheel Joint          -->
     <!-- ========================= -->
 
-    <joint name="left_wheel_joint" type="fixed">
+    <joint name="left_wheel_joint" type="continuous">
 
         <parent link="base_link"/>
         <child link="left_wheel"/>
 
         <origin xyz="0 0.225 0.10" rpy="0 0 0"/>
+
+            <axis xyz="0 1 0"/>
 
     </joint>
 
@@ -95,13 +146,55 @@
     <!-- Right Wheel Joint         -->
     <!-- ========================= -->
 
-    <joint name="right_wheel_joint" type="fixed">
+    <joint name="right_wheel_joint" type="continuous">
 
         <parent link="base_link"/>
         <child link="right_wheel"/>
 
         <origin xyz="0 -0.225 0.10" rpy="0 0 0"/>
 
-    </joint>
+            <axis xyz="0 1 0"/>
+
+    </joint>   
+
+
+
+    <!-- Wheel contact friction -->
+    <gazebo reference="left_wheel">
+        <mu1>1.0</mu1>
+        <mu2>1.0</mu2>
+    </gazebo>
+
+    <gazebo reference="right_wheel">
+        <mu1>1.0</mu1>
+        <mu2>1.0</mu2>
+    </gazebo>
+
+    <!-- ========================= -->
+    <!-- Gazebo Differential Drive -->
+    <!-- ========================= -->
+
+    <gazebo>
+
+        <plugin
+            filename="gz-sim-diff-drive-system"
+            name="gz::sim::systems::DiffDrive">
+
+            <left_joint>left_wheel_joint</left_joint>
+            <right_joint>right_wheel_joint</right_joint>
+
+            <wheel_separation>0.45</wheel_separation>
+            <wheel_radius>0.10</wheel_radius>
+
+            <odom_publish_frequency>30</odom_publish_frequency>
+
+            <topic>cmd_vel</topic>
+
+        </plugin>
+
+    </gazebo>
+
 
 </robot>
+
+
