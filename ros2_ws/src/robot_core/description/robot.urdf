@@ -31,6 +31,11 @@
             <geometry>
                 <box size="0.60 0.40 0.30"/>
             </geometry>
+
+            <material name="robot_body">
+                <color rgba="0.1 0.3 0.8 1.0"/>
+            </material>
+
         </visual>
 
         <collision>
@@ -72,7 +77,12 @@
             <geometry>
                 <cylinder radius="0.10" length="0.05"/>
             </geometry>
-        </visual>
+
+            <material name="rubber">
+                <color rgba="0.02 0.02 0.02 1.0"/>
+            </material>
+
+            </visual>
 
         <collision>
             <origin xyz="0 0 0" rpy="1.5708 0 0"/>
@@ -187,6 +197,12 @@
             <wheel_radius>0.10</wheel_radius>
 
             <odom_publish_frequency>30</odom_publish_frequency>
+
+            <odom_topic>odom</odom_topic>
+            <tf_topic>/tf</tf_topic>
+
+            <frame_id>odom</frame_id>
+            <child_frame_id>base_link</child_frame_id>
 
             <topic>cmd_vel</topic>
 

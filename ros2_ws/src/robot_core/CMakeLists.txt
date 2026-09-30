@@ -88,17 +88,11 @@ install(TARGETS
 )
 
 install(
-  DIRECTORY config
-  DESTINATION share/${PROJECT_NAME}
-)
-
-install(
-  DIRECTORY launch
-  DESTINATION share/${PROJECT_NAME}
-)
-
-install(
-  DIRECTORY description
+  DIRECTORY
+    config
+    launch
+    description
+    worlds
   DESTINATION share/${PROJECT_NAME}
 )
 
