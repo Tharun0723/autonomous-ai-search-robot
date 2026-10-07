@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro"
+       name="autonomous_search_robot">
 
-<robot name="autonomous_search_robot">
 
     <!-- ========================= -->
     <!-- Base Link                 -->
@@ -217,6 +218,11 @@
         <plugin
             filename="gz_ros2_control-system"
             name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+
+            <parameters>$(find robot_core)/config/controllers.yaml</parameters>
+
+            <controller_manager_name>controller_manager</controller_manager_name>
+
         </plugin>
 
     </gazebo>

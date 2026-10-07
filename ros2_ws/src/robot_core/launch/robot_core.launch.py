@@ -1,9 +1,12 @@
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
-from launch.substitutions import LaunchConfiguration
+from launch.actions import RegisterEventHandler
+from launch.event_handlers import OnProcessExit
 from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch.substitutions import LaunchConfiguration, Command
 from launch_ros.actions import Node
 from ament_index_python.packages import get_package_share_directory
+
 import os
 
 
@@ -14,6 +17,12 @@ def generate_launch_description():
     # ---------------------------------------------------------
     # File paths
     # ---------------------------------------------------------
+
+    controllers_file = os.path.join(
+        package_share,
+        'config',
+        'controllers.yaml'
+    )
 
     world_file = os.path.join(
         package_share,
@@ -33,11 +42,22 @@ def generate_launch_description():
         'robot_params.yaml'
     )
 
-    urdf_file = os.path.join(
+    xacro_file = os.path.join(
         package_share,
         'description',
-        'robot.urdf'
+        'robot.urdf.xacro'
     )
+
+    # ---------------------------------------------------------
+    # Generate robot_description from Xacro
+    # ---------------------------------------------------------
+
+    robot_description = Command([
+        'xacro ',
+        xacro_file,
+        ' controllers_file:=',
+        controllers_file
+    ])
 
     # ---------------------------------------------------------
     # Gazebo
@@ -70,61 +90,142 @@ def generate_launch_description():
 
     auto_start_goal_arg = DeclareLaunchArgument(
         'auto_start_goal',
-        default_value='true',
+        default_value='false',
         description='Automatically send the action goal when the client starts'
     )
 
     # ---------------------------------------------------------
-    # Robot description
+    # Robot State Publisher
     # ---------------------------------------------------------
 
-    with open(urdf_file, 'r') as file:
-        robot_description = file.read()
+    robot_state_publisher = Node(
+        package='robot_state_publisher',
+        executable='robot_state_publisher',
+        name='robot_state_publisher',
+        parameters=[
+            {
+                'robot_description': robot_description
+            }
+        ],
+        output='screen'
+    )
 
     # ---------------------------------------------------------
-    # Launch all nodes
+    # Spawn robot into Gazebo
+    # ---------------------------------------------------------
+
+    spawn_robot = Node(
+        package='ros_gz_sim',
+        executable='create',
+        arguments=[
+            '-world', 'search_environment',
+            '-string', robot_description,
+            '-name', 'autonomous_search_robot',
+            '-x', '0',
+            '-y', '0',
+            '-z', '0.2'
+        ],
+        output='screen'
+    )
+
+    # ---------------------------------------------------------
+    # Controllers
+    # ---------------------------------------------------------
+
+    joint_state_broadcaster_spawner = Node(
+        package='controller_manager',
+        executable='spawner',
+        arguments=[
+            'joint_state_broadcaster',
+            '--controller-manager',
+            '/controller_manager',
+            '--controller-manager-timeout',
+            '60'
+        ],
+        output='screen'
+    )
+
+    diff_drive_controller_spawner = Node(
+        package='controller_manager',
+        executable='spawner',
+        arguments=[
+            'diff_drive_controller',
+            '--controller-manager',
+            '/controller_manager',
+            '--controller-manager-timeout',
+            '60'
+        ],
+        output='screen'
+    )
+
+    # ---------------------------------------------------------
+    # Start controllers only after robot has spawned
+    # ---------------------------------------------------------
+
+    start_joint_state_broadcaster = RegisterEventHandler(
+        OnProcessExit(
+            target_action=spawn_robot,
+            on_exit=[
+                joint_state_broadcaster_spawner
+            ]
+        )
+    )
+
+    start_diff_drive_controller = RegisterEventHandler(
+        OnProcessExit(
+            target_action=joint_state_broadcaster_spawner,
+            on_exit=[
+                diff_drive_controller_spawner
+            ]
+        )
+    )
+
+    # ---------------------------------------------------------
+    # Existing action server
+    # ---------------------------------------------------------
+
+    action_server = Node(
+        package='robot_core',
+        executable='robot_move_action_server',
+        name='robot_move_action_server',
+        output='screen'
+    )
+
+    # ---------------------------------------------------------
+    # Existing action client
+    # ---------------------------------------------------------
+
+    action_client = Node(
+        package='robot_core',
+        executable='robot_move_action_client',
+        name='robot_move_action_client',
+        parameters=[
+            config_file,
+            {
+                'target_distance': LaunchConfiguration('target_distance'),
+                'auto_start_goal': LaunchConfiguration('auto_start_goal')
+            }
+        ],
+        output='screen'
+    )
+
+    # ---------------------------------------------------------
+    # Launch everything
     # ---------------------------------------------------------
 
     return LaunchDescription([
-
-        # Launch arguments
         target_distance_arg,
         auto_start_goal_arg,
 
-        # Gazebo simulation
         gazebo_launch,
 
-        # Robot State Publisher
-        Node(
-            package='robot_state_publisher',
-            executable='robot_state_publisher',
-            name='robot_state_publisher',
-            parameters=[
-                {
-                    'robot_description': robot_description
-                }
-            ]
-        ),
+        robot_state_publisher,
 
-        # Robot movement action server
-        Node(
-            package='robot_core',
-            executable='robot_move_action_server',
-            name='robot_move_action_server'
-        ),
+        spawn_robot,
 
-        # Robot movement action client
-        Node(
-            package='robot_core',
-            executable='robot_move_action_client',
-            name='robot_move_action_client',
-            parameters=[
-                config_file,
-                {
-                    'target_distance': LaunchConfiguration('target_distance'),
-                    'auto_start_goal': LaunchConfiguration('auto_start_goal')
-                }
-            ]
-        )
+        start_joint_state_broadcaster,
+        start_diff_drive_controller,
 
+        action_server,
+        action_client
     ])
