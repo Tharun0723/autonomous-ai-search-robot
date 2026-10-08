@@ -19,3 +19,7 @@ ros2_ws/log/
 # Python cache
 __pycache__/
 *.pyc
+
+# ROS TF diagnostic files
+ros2_ws/frames_*.gv
+ros2_ws/frames_*.pdf

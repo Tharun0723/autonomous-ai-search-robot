@@ -1,0 +1,21 @@
+locations:
+
+  BASE:
+    x: 0.0
+    y: 0.0
+    yaw: 0.0
+
+  ROOM_A:
+    x: 4.0635
+    y: 2.0167
+    yaw: 0.0
+
+  ROOM_B:
+    x: 4.4932
+    y: -3.3064
+    yaw: 0.0
+
+  SEARCH_ZONE:
+    x: -3.9624
+    y: -2.9777
+    yaw: 0.0
