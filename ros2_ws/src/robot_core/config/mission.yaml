@@ -1,0 +1,10 @@
+mission:
+  name: multi_location_patrol
+
+  locations:
+    - ROOM_A
+    - ROOM_B
+    - SEARCH_ZONE
+    - BASE
+
+  stop_on_failure: true

@@ -119,6 +119,23 @@ target_link_libraries(
   "${cpp_typesupport_target}"
 )
 
+
+add_executable(mission_controller
+  src/mission_controller.cpp
+)
+
+ament_target_dependencies(mission_controller
+  rclcpp
+  rclcpp_action
+  nav2_msgs
+)
+
+target_link_libraries(
+  mission_controller
+  yaml-cpp
+)
+
+
 install(
   TARGETS
     robot_status_node
@@ -128,6 +145,7 @@ install(
     robot_move_action_server
     robot_move_action_client
     location_manager
+    mission_controller
     DESTINATION lib/${PROJECT_NAME}
 )
 
